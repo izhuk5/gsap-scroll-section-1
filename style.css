@@ -8,6 +8,13 @@
   box-sizing: border-box;
 }
 
+/**
+ * Fluid responsive font size
+ * https://client-first.webflow.io/docs/fluid-responsive
+ * 1 breakpoint: 1440px
+ * min font size: 0rem(0px screen width)
+ * max font size: 1rem(1440px screen width)
+ */
 html {
   font-size: calc(-0.0006949270326617185rem + 1.111883252258513vw);
 }

@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let items;
   let dimmerScrub;
 
+  const hasScrollTimeline = CSS.supports('(animation-timeline: scroll()) and (animation-range: 0% 100%)');
+
   const update = () => {
     document.documentElement.dataset.animate = config.animate;
     document.documentElement.dataset.snap = config.snap;
@@ -18,19 +20,33 @@ document.addEventListener('DOMContentLoaded', () => {
       dimmerScrub?.disable(true, false);
       gsap.set(items, { opacity: 1 });
     } else {
-      gsap.set(items, { opacity: i => i !== 0 ? 0.2 : 0.2 });
+      if (!hasScrollTimeline) {
+        // Для Firefox и Safari
+        const firstItem = document.querySelector('.craft_list .craft_item:first-of-type');
+        if (firstItem) {
+          firstItem.style.opacity = '1';
+        }
+        gsap.set(items.slice(1), { opacity: 0.2 });
+      } else {
+        // Для Chrome
+        gsap.set(items, { opacity: i => i !== 0 ? 0.2 : 1 });
+      }
       dimmerScrub?.enable(true, true);
     }
   };
 
   // backfill the scroll functionality with GSAP
-  if (!CSS.supports('(animation-timeline: scroll()) and (animation-range: 0% 100%)')) {
+  if (!hasScrollTimeline) {
     gsap.registerPlugin(ScrollTrigger);
 
     // animate the items with GSAP if there's no CSS support
     items = gsap.utils.toArray('.craft_list .craft_item');
 
-    gsap.set(items, { opacity: i => i !== 0 ? 0.2 : 1 });
+    const firstItem = document.querySelector('.craft_list .craft_item:first-of-type');
+    if (firstItem) {
+      firstItem.style.opacity = '1';
+    }
+    gsap.set(items.slice(1), { opacity: 0.2 });
 
     const dimmer = gsap
       .timeline()
@@ -55,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
       animation: dimmer,
       scrub: 0.2
     });
+  } else {
+    items = gsap.utils.toArray('.craft_list .craft_item');
+    gsap.set(items, { opacity: i => i !== 0 ? 0.2 : 1 });
   }
   update();
 });

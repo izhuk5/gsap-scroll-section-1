@@ -99,11 +99,6 @@ footer {
   font-weight: 600;
 }
 
-.craft_item:not(:last-of-type) {
-  color: attr(data-color);
-  transition: color 0.3s ease;
-}
-
 /* Animations */
 @-webkit-keyframes opacity {
   0% {
